@@ -1,0 +1,128 @@
+[
+  {
+    "id": "hokkai-kitayell-main",
+    "name": "北海きたえーる メインアリーナ",
+    "prefecture": "北海道",
+    "city": "札幌市",
+    "courtCount": 20,
+    "officialUrl": "https://www.kitayell.jp/facilities/sports/main-arena/",
+    "sources": [
+      {
+        "title": "北海きたえーる メインアリーナ",
+        "url": "https://www.kitayell.jp/facilities/sports/main-arena/",
+        "checkedAt": "2026-11-21"
+      }
+    ],
+    "photos": [],
+    "illustrationId": "badminton-court",
+    "notes": "面数は施設の設置可能数です。個人利用・利用日・予約条件は公式サイトをご確認ください。"
+  },
+  {
+    "id": "hokkai-kitayell-sub",
+    "name": "北海きたえーる サブアリーナ",
+    "prefecture": "北海道",
+    "city": "札幌市",
+    "courtCount": 8,
+    "officialUrl": "https://www.kitayell.jp/facilities/sports/sub-arena/",
+    "sources": [
+      {
+        "title": "北海きたえーる サブアリーナ",
+        "url": "https://www.kitayell.jp/facilities/sports/sub-arena/",
+        "checkedAt": "2026-11-21"
+      }
+    ],
+    "photos": [],
+    "illustrationId": "badminton-court",
+    "notes": "面数は施設の設置可能数です。個人利用・利用日・予約条件は公式サイトをご確認ください。"
+  },
+  {
+    "id": "tokyo-metropolitan-main",
+    "name": "東京体育館 メインアリーナ",
+    "prefecture": "東京都",
+    "city": "渋谷区",
+    "courtCount": 16,
+    "officialUrl": "https://tef.or.jp/tmg/arena/",
+    "sources": [
+      {
+        "title": "東京体育館 メインアリーナ",
+        "url": "https://tef.or.jp/tmg/arena/",
+        "checkedAt": "2026-11-21"
+      }
+    ],
+    "photos": [],
+    "illustrationId": "badminton-court",
+    "notes": "面数は施設の設置可能数です。個人利用・利用日・予約条件は公式サイトをご確認ください。"
+  },
+  {
+    "id": "tokyo-metropolitan-sub",
+    "name": "東京体育館 サブアリーナ",
+    "prefecture": "東京都",
+    "city": "渋谷区",
+    "courtCount": 8,
+    "officialUrl": "https://www.tef.or.jp/tmg/subarena/",
+    "sources": [
+      {
+        "title": "東京体育館 サブアリーナ",
+        "url": "https://www.tef.or.jp/tmg/subarena/",
+        "checkedAt": "2026-11-21"
+      }
+    ],
+    "photos": [],
+    "illustrationId": "badminton-court",
+    "notes": "面数は施設の設置可能数です。個人利用・利用日・予約条件は公式サイトをご確認ください。"
+  },
+  {
+    "id": "yokohama-budokan",
+    "name": "横浜武道館 アリーナ",
+    "prefecture": "神奈川県",
+    "city": "横浜市",
+    "courtCount": 16,
+    "officialUrl": "https://www.yokohama-budokan.com/users/",
+    "sources": [
+      {
+        "title": "横浜武道館 一般・サークル利用者の方へ",
+        "url": "https://www.yokohama-budokan.com/users/",
+        "checkedAt": "2026-11-21"
+      }
+    ],
+    "photos": [],
+    "illustrationId": "badminton-court",
+    "notes": "面数は施設の設置可能数です。個人利用・利用日・予約条件は公式サイトをご確認ください。"
+  },
+  {
+    "id": "kyoto-city-gymnasium",
+    "name": "京都市体育館",
+    "prefecture": "京都府",
+    "city": "京都市",
+    "courtCount": 12,
+    "officialUrl": "https://www.call3755.city.kyoto.lg.jp/faq_p/P200.aspx?FAQID=0100950",
+    "sources": [
+      {
+        "title": "京都市 屋内スポーツ施設案内",
+        "url": "https://www.call3755.city.kyoto.lg.jp/faq_p/P200.aspx?FAQID=0100950",
+        "checkedAt": "2026-11-21"
+      }
+    ],
+    "photos": [],
+    "illustrationId": "badminton-court",
+    "notes": "面数は施設の設置可能数です。個人利用・利用日・予約条件は公式サイトをご確認ください。"
+  },
+  {
+    "id": "fukuoka-civic-gymnasium",
+    "name": "福岡市民体育館",
+    "prefecture": "福岡県",
+    "city": "福岡市",
+    "courtCount": null,
+    "officialUrl": "https://www.sports-fukuokacity.or.jp/facility/gym_fukuoka/facility.html",
+    "sources": [
+      {
+        "title": "福岡市スポーツ協会 施設紹介",
+        "url": "https://www.sports-fukuokacity.or.jp/facility/gym_fukuoka/facility.html",
+        "checkedAt": "2026-11-21"
+      }
+    ],
+    "photos": [],
+    "illustrationId": "badminton-court",
+    "notes": "面数は施設の設置可能数です。個人利用・利用日・予約条件は公式サイトをご確認ください。"
+  }
+]
