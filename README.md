@@ -82,6 +82,10 @@ curl http://localhost:8787/graphql \
 
 本文16KiB、クエリ8192文字、最大深さ10・100フィールド。名前付きfragment spreadは拒否し、inline fragmentは使用できます。入力・構文エラーは400、Content-Type不正は415、本文超過は413。実行時のフィールドエラーはGraphQL標準形式の `errors` を含む200です。RESTとGraphQLは同じデータ・フィルタ・ページングを使います。
 
+## リポジトリの公開状況
+
+この環境のGitHub連携ではリポジトリ作成権限がなく、GitHubへの公開は未完了です。[Publicリポジトリの作成手順](docs/publish-repository.md)を参照してください。
+
 ## Cloudflareに公開
 
 [詳細な手順](docs/deploy.md)。WorkersのStatic AssetsでAPIと画面・図を同じWorkerから配信します。D1 / KV / R2は不要です。
