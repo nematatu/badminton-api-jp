@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import app from '../src/index'
 import { venues, authors, venueSchema } from '../src/data'
 
-const request = (path: string) => app.request('https://badminton.example' + path)
+const request = (path: string, init?: RequestInit) => app.request('https://badminton.example' + path, init)
 
 describe('REST API', () => {
   it('lists venues with stable paging and source provenance', async () => {
@@ -36,6 +36,7 @@ describe('REST API', () => {
     expect(res.status).toBe(400)
     const body = await res.json() as any
     expect(body.error).toBe('Invalid query parameter.')
+    expect(res.headers.get('Cache-Control')).toBe('no-store')
     expect(body.details[0].field).toBe(query.split('=')[0].split('&')[0])
     expect(body.details[0].message).toBeTruthy()
   })
@@ -47,6 +48,7 @@ describe('REST API', () => {
     for (const path of ['/venues/unknown', '/authors/unknown', '/venuse']) {
       const res = await request(path)
       expect(res.status).toBe(404)
+      expect(res.headers.get('Cache-Control')).toBe('no-store')
       expect((await res.json() as any).error).toBeTruthy()
     }
   })
@@ -64,5 +66,42 @@ describe('content integrity', () => {
       expect(venueSchema.safeParse(venue).success).toBe(true)
       for (const photo of venue.photos) expect(authors.some((a) => a.id === photo.authorId)).toBe(true)
     }
+  })
+})
+
+
+describe('conditional requests', () => {
+  it('returns no body and preserves browser cache headers for matching ETags', async () => {
+    const first = await request('/venues')
+    const tag = first.headers.get('ETag')!
+    expect(tag).toBeTruthy()
+    expect(first.headers.get('Cache-Control')).toBe('public, max-age=300')
+    for (const value of [tag, `W/${tag}`, `"old", ${tag}`, '*']) {
+      const res = await request('/venues', { headers: { 'If-None-Match': value } })
+      expect(res.status).toBe(304)
+      expect(await res.text()).toBe('')
+      expect(res.headers.get('ETag')).toBe(tag)
+      expect(res.headers.get('Cache-Control')).toBe('public, max-age=300')
+      expect(res.headers.get('Access-Control-Allow-Origin')).toBe('*')
+      expect(res.headers.get('Access-Control-Expose-Headers')).toContain('ETag')
+    }
+  })
+
+  it('distinguishes pretty JSON and sends a body when the validator differs', async () => {
+    const first = await request('/venues')
+    const res = await request('/venues?pretty', { headers: { 'If-None-Match': first.headers.get('ETag')! } })
+    expect(res.status).toBe(200)
+    expect(res.headers.get('ETag')).not.toBe(first.headers.get('ETag'))
+    expect(await res.text()).toContain('\n')
+  })
+
+  it('supports HEAD and browser preflight without a response body', async () => {
+    const head = await request('/venues', { method: 'HEAD' })
+    expect(head.status).toBe(200)
+    expect(await head.text()).toBe('')
+    expect(head.headers.get('ETag')).toBeTruthy()
+    const preflight = await request('/venues', { method: 'OPTIONS', headers: { Origin: 'https://example.com', 'Access-Control-Request-Method': 'GET', 'Access-Control-Request-Headers': 'If-None-Match' } })
+    expect(preflight.status).toBe(204)
+    expect(preflight.headers.get('Access-Control-Allow-Headers')?.toLowerCase()).toContain('if-none-match')
   })
 })

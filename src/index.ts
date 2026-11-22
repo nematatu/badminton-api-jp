@@ -1,12 +1,21 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
+import { etag, RETAINED_304_HEADERS } from 'hono/etag'
 import { prettyJSON } from 'hono/pretty-json'
 import { z } from 'zod'
 import { authors, listVenues, venues } from './data'
 import { parseQuery } from './query'
 
 const app = new Hono()
-app.use('*', cors({ origin: '*', allowMethods: ['GET', 'HEAD', 'OPTIONS'] }))
+app.use('*', cors({ origin: '*', allowMethods: ['GET', 'HEAD', 'OPTIONS'], exposeHeaders: ['ETag'] }))
+app.use('*', async (c, next) => {
+  await next()
+  const cacheable = ['GET', 'HEAD'].includes(c.req.method) && [200, 304].includes(c.res.status)
+  c.header('Cache-Control', cacheable ? 'public, max-age=300' : 'no-store')
+})
+app.use('*', etag({
+  retainedHeaders: [...RETAINED_304_HEADERS, 'access-control-allow-origin', 'access-control-expose-headers'],
+}))
 app.use('*', prettyJSON())
 
 app.get('/', (c) => c.json({
