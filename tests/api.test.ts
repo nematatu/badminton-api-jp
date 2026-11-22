@@ -27,12 +27,17 @@ describe('REST API', () => {
     expect(filtered.totalCount).toBe(2)
     const normalized = await (await request('/venues?q=ＫＩＴＡＹＥＬＬ')).json() as any
     expect(normalized.totalCount).toBe(2)
+    const trimmed = await (await request('/venues?' + new URLSearchParams({ prefecture: ' 東京都 ', q: ' 東京 ' }))).json() as any
+    expect(trimmed.totalCount).toBe(2)
   })
 
-  it.each(['page=0', 'page=1.5', 'page=abc', 'page=Infinity', 'page=100001', 'perPage=101', 'perPage=0', 'perPage=', 'q=' + 'a'.repeat(101), 'prefecture='])('rejects invalid query %s', async (query) => {
+  it.each(['page=0', 'page=1.5', 'page=abc', 'page=Infinity', 'page=100001', 'page=0x10', 'page=1e2', 'page=2.0', 'page=%202', 'page=1&page=2', 'perPage=1&perPage=2', 'q=a&q=b', 'pretty&pretty', 'perPage=101', 'perPage=0', 'perPage=', 'q=' + 'a'.repeat(101), 'prefecture='])('rejects invalid query %s', async (query) => {
     const res = await request('/venues?' + query)
     expect(res.status).toBe(400)
-    expect((await res.json() as any).error).toBe('Invalid query parameter.')
+    const body = await res.json() as any
+    expect(body.error).toBe('Invalid query parameter.')
+    expect(body.details[0].field).toBe(query.split('=')[0].split('&')[0])
+    expect(body.details[0].message).toBeTruthy()
   })
 
   it('returns empty lists and JSON 404s', async () => {

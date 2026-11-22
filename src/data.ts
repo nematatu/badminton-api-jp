@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import venueData from '../content/venues.json'
 import authorData from '../content/authors.json'
+import type { querySchema } from './query'
 
 const id = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
 const url = z.url().refine((value) => new URL(value).protocol === 'https:', 'HTTPS required')
@@ -28,13 +29,6 @@ for (const collection of [venues, authors]) {
 for (const venue of venues) for (const photo of venue.photos) {
   if (!authors.some((a) => a.id === photo.authorId)) throw new Error(`Unknown author ${photo.authorId}`)
 }
-
-export const querySchema = z.object({
-  page: z.coerce.number().int().min(1).max(100000).default(1),
-  perPage: z.coerce.number().int().min(1).max(100).default(10),
-  prefecture: z.string().min(1).max(20).optional(),
-  q: z.string().max(100).optional(),
-})
 
 export function listVenues({ page, perPage, prefecture, q }: z.infer<typeof querySchema>) {
   const query = q?.normalize('NFKC').toLocaleLowerCase('ja')
