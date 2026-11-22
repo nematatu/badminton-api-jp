@@ -1,6 +1,6 @@
 # Content licenses
 
-The original factual venue dataset compiled by this project (`content/venues.json`), contributor metadata supplied to this project, and original generic court illustration (`public/images/badminton-court.svg`) are dedicated to the public domain under CC0 1.0 Universal, to the extent the contributors hold rights in them.
+The original factual venue dataset compiled by this project (`content/venues.json`) and contributor metadata supplied to this project are dedicated to the public domain under CC0 1.0 Universal, to the extent the contributors hold rights in them.
 
 Legal code: https://creativecommons.org/publicdomain/zero/1.0/legalcode
 
