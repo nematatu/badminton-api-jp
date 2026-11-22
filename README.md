@@ -82,10 +82,6 @@ curl http://localhost:8787/graphql \
 
 本文16KiB、クエリ8192文字、最大深さ10・100フィールド。名前付きfragment spreadは拒否し、inline fragmentは使用できます。入力・構文エラーは400、Content-Type不正は415、本文超過は413。実行時のフィールドエラーはGraphQL標準形式の `errors` を含む200です。RESTとGraphQLは同じデータ・フィルタ・ページングを使います。
 
-## リポジトリの公開状況
-
-この環境のGitHub連携ではリポジトリ作成権限がなく、GitHubへの公開は未完了です。[Publicリポジトリの作成手順](docs/publish-repository.md)を参照してください。
-
 ## Cloudflareに公開
 
 [詳細な手順](docs/deploy.md)。WorkersのStatic AssetsでAPIと画面・図を同じWorkerから配信します。D1 / KV / R2は不要です。
@@ -97,7 +93,7 @@ npx wrangler login
 npm run deploy
 ```
 
-Cloudflareが表示した `https://badminton-api-jp.<subdomain>.workers.dev` が公開URLです。これは形式例で、リポジトリ作成時点では未デプロイです。独自ドメインは公開後にWorkersのSettings → Domains & Routesから追加できます。
+Cloudflareが表示した `https://badminton-api-jp.<subdomain>.workers.dev` が公開URLです。これは形式例です。実際の公開先はデプロイ時に決まります。独自ドメインは公開後にWorkersのSettings → Domains & Routesから追加できます。
 
 Workers BuildsでこのGitHubリポジトリを接続する場合、ルートディレクトリは `/`、ビルドコマンドは `npm run check`、デプロイコマンドは `npm run deploy` です。静的ファイルだけのPagesプロジェクトではAPIは動きません。
 
