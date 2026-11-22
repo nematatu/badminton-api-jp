@@ -5,6 +5,7 @@
 ```sh
 npm ci
 npm run check
+npm run test:worker
 npx wrangler login
 npm run deploy
 ```
@@ -22,7 +23,7 @@ Cloudflare DashboardからこのGitHubリポジトリをWorkerに接続します
 
 ## GitHub Actions
 
-`production` environmentのsecretsに `CLOUDFLARE_API_TOKEN`（Workers編集権限）と `CLOUDFLARE_ACCOUNT_ID` を設定します。Actionsの「Deploy to Cloudflare」を手動実行すると、チェック後にデプロイします。
+`production` environmentのsecretsに `CLOUDFLARE_API_TOKEN`（Workers編集権限）と `CLOUDFLARE_ACCOUNT_ID` を設定します。Actionsの「Deploy to Cloudflare」を手動実行すると、型・データ検証・テスト・ビルド・Workers起動確認が成功した後にデプロイします。
 
 ## 公開後の確認
 
