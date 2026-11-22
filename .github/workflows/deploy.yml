@@ -7,7 +7,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    environment: production
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.api_url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -17,7 +19,14 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npm run test:worker
-      - run: npm run deploy
+      - name: Deploy API
+        id: deploy
+        run: |
+          npm run deploy
+          node scripts/deployment-url.mjs "$WRANGLER_OUTPUT_FILE_PATH"
         env:
+          WRANGLER_OUTPUT_FILE_PATH: ${{ runner.temp }}/wrangler-deploy.ndjson
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Check public API
+        run: npm run smoke -- "${{ steps.deploy.outputs.api_url }}" --wait

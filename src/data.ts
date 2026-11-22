@@ -24,9 +24,11 @@ export const venueSchema = z.object({
   notes: z.string().trim(),
 }).strict()
 
+export const authorSchema = z.object({ id, name: text, url }).strict()
+
 export const contentSchema = z.object({
   venues: z.array(venueSchema),
-  authors: z.array(z.object({ id, name: text, url }).strict()),
+  authors: z.array(authorSchema),
 }).superRefine((content, context) => {
   for (const key of ['venues', 'authors'] as const) {
     const seen = new Set<string>()

@@ -2,6 +2,17 @@
 
 国内のバドミントン会場を返す、学習・試作用の小さなREST APIです。認証不要。Hono + Cloudflare Workersで動きます。
 
+## 呼び出す
+
+ローカルで起動するか、[Cloudflareに公開](docs/deploy.md)してベースURLを用意します。GitHubのURLはAPIのベースURLではありません。
+
+```sh
+curl 'http://localhost:8787/venues?perPage=2'
+curl 'http://localhost:8787/venues/tokyo-metropolitan-main'
+```
+
+仕様は `GET /openapi.json`。Swagger UI・Postmanなどへ読み込めます。[TypeScriptクライアント](client/README.md)も使えます。
+
 ## 背景
 
 [yusukebeさんのRamen API開発記事](https://yusukebe.com/posts/2022/ramen-api/)に着想を得ました。好きな題材のAPIを使って、一覧表示やページングを試す。その考え方をバドミントン会場に応用しています。コードとデータをGitHubで管理し、会場や写真をPRで追加できます。
@@ -47,7 +58,9 @@ console.log(venues.map(venue => venue.name), pageInfo.nextPage)
 
 一覧は `{ venues, totalCount, pageInfo }`、詳細は `{ venue }`、投稿者は `{ author }` を返します。IDの昇順。`pageInfo` は `currentPage / perPage / lastPage / prevPage / nextPage` を持ち、前後のページがなければ `null`。0件でも `lastPage` は1で、範囲外のページは空配列です。
 
-不正なパラメータは400、存在しないIDは404。エラーは `{ "error": "…" }` 形式です。CORS対応で、ブラウザから利用できます。成功したGETは5分キャッシュ可能で、ETagによる304応答にも対応します。
+不正なパラメータは400、存在しないIDは404、未対応メソッドは405。エラーは `{ "code": "…", "error": "…" }` 形式です。分岐には安定した `code` を使ってください。CORS対応で、ブラウザから利用できます。成功したGETは5分キャッシュ可能で、ETagによる304応答にも対応します。
+
+一覧・詳細・投稿者の3つがデータ用APIです。`/` はバージョンと仕様URLの案内、`/openapi.json` は機械可読な仕様です。
 
 [レスポンス・エラー・ページングの具体例](docs/api.md)。
 

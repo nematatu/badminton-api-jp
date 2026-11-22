@@ -1,5 +1,7 @@
 # APIの利用例
 
+認証・APIキーは不要です。`GET /` でバージョン・ベースURL・OpenAPI仕様のURLを確認できます。
+
 以下のURLはローカル用です。公開後は `http://localhost:8787` を自分のWorkers URLに置き換えてください。
 
 ## 一覧とページング
@@ -74,6 +76,7 @@ curl http://localhost:8787/authors/badminton-api
 
 ```json
 {
+  "code": "INVALID_QUERY",
   "error": "Invalid query parameter.",
   "details": [
     { "field": "page", "message": "Provide this parameter only once." }
@@ -81,10 +84,26 @@ curl http://localhost:8787/authors/badminton-api
 }
 ```
 
-`details[].field` で入力項目を特定できます。`message` は表示用の説明です。存在しない会場・投稿者・パスには404と `{ "error": "…" }` を返します。クライアントではJSONを読む前に `response.ok` またはステータスコードを確認してください。
+エラーの分岐は `code` を使ってください。`error` や `details[].message` の文言は表示用で、将来改善される場合があります。
+
+| HTTP | code | 意味 |
+| --- | --- | --- |
+| 400 | `INVALID_QUERY` | クエリが不正、または重複 |
+| 404 | `NOT_FOUND` | 会場・投稿者・パスが存在しない |
+| 405 | `METHOD_NOT_ALLOWED` | メソッドが未対応。`Allow` ヘッダーを参照 |
+| 500 | `INTERNAL_ERROR` | サーバー内部のエラー |
+
+`details[].field` で入力項目を特定できます。`message` は表示用の説明です。存在しない会場・投稿者・パスには404と `{ "code": "NOT_FOUND", "error": "…" }` を返します。クライアントではJSONを読む前に `response.ok` またはステータスコードを確認してください。
 
 ## キャッシュ
 
 成功したGETは `Cache-Control: public, max-age=300` と `ETag` を返します。ブラウザなどのキャッシュで5分間再利用できます。`If-None-Match` にETagを送ると、同じ内容なら本文なしの304です。手動で304を扱う場合はJSONを読まず、保持しているデータを使います。
 
 400・404などのエラーには `Cache-Control: no-store` を付けます。`?pretty` の有無で本文が異なるため、ETagも異なります。CORS対応で、ブラウザからETagを取得できます。
+
+
+## OpenAPIと互換性
+
+`GET /openapi.json` はOpenAPI 3.0.3形式で、現在アクセスしているオリジンを `servers` に返します。RESTエンドポイント、クエリ、レスポンス、エラー、ETagを定義しています。定義ファイルはSwagger UI・Postman・対応コード生成ツールへ読み込めます。HEADはGETと同じヘッダーで本文なし、OPTIONSはブラウザのCORS確認用です。
+
+現在のバージョンは `GET /` とOpenAPIの `info.version` で確認できます。既存パス・フィールドの意味を保ち、追加フィールドは許容して利用してください。フィールドの削除・型変更・ページング方式の変更は、既存のURLにそのまま適用せず別バージョンとして提供する方針です。写真の権利・施設情報の最新性はREADMEを参照してください。
