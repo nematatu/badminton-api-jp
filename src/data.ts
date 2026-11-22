@@ -2,33 +2,50 @@ import { z } from 'zod'
 import venueData from '../content/venues.json'
 import authorData from '../content/authors.json'
 import type { querySchema } from './query'
+import { prefectureSchema } from './prefectures'
 
 const id = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+const text = z.string().trim().min(1)
+const checkedAt = z.iso.date().refine((date) => date <= new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Tokyo' }).format(new Date()), 'Confirmation date cannot be in the future.')
 const url = z.url().refine((value) => new URL(value).protocol === 'https:', 'HTTPS required')
 export const venueSchema = z.object({
   id,
-  name: z.string().min(1),
-  prefecture: z.string().min(1),
-  city: z.string().min(1),
+  name: text,
+  prefecture: prefectureSchema,
+  city: text,
   courtCount: z.number().int().positive().nullable(),
   officialUrl: url,
-  sources: z.array(z.object({ title: z.string().min(1), url, checkedAt: z.iso.date() }).strict()).min(1),
+  sources: z.array(z.object({ title: text, url, checkedAt }).strict()).min(1),
   photos: z.array(z.object({
-    name: z.string().min(1), url,
+    name: text, url,
     width: z.number().int().positive(), height: z.number().int().positive(),
     authorId: id, license: z.literal('CC-BY-4.0'),
   }).strict()),
-  notes: z.string(),
+  notes: z.string().trim(),
 }).strict()
 
-export const authors = z.array(z.object({ id, name: z.string().min(1), url }).strict()).parse(authorData)
-export const venues = z.array(venueSchema).parse(venueData).sort((a, b) => a.id.localeCompare(b.id))
-for (const collection of [venues, authors]) {
-  if (new Set(collection.map((v) => v.id)).size !== collection.length) throw new Error('Duplicate ID')
-}
-for (const venue of venues) for (const photo of venue.photos) {
-  if (!authors.some((a) => a.id === photo.authorId)) throw new Error(`Unknown author ${photo.authorId}`)
-}
+export const contentSchema = z.object({
+  venues: z.array(venueSchema),
+  authors: z.array(z.object({ id, name: text, url }).strict()),
+}).superRefine((content, context) => {
+  for (const key of ['venues', 'authors'] as const) {
+    const seen = new Set<string>()
+    content[key].forEach((item, index) => {
+      if (seen.has(item.id)) context.addIssue({ code: 'custom', path: [key, index, 'id'], message: `Duplicate ID: ${item.id}` })
+      seen.add(item.id)
+    })
+  }
+  const authorIds = new Set(content.authors.map((a) => a.id))
+  content.venues.forEach((venue, i) => venue.photos.forEach((photo, j) => {
+    if (!authorIds.has(photo.authorId)) context.addIssue({
+      code: 'custom', path: ['venues', i, 'photos', j, 'authorId'], message: `Unknown author: ${photo.authorId}`,
+    })
+  }))
+})
+
+const content = contentSchema.parse({ venues: venueData, authors: authorData })
+export const authors = content.authors
+export const venues = content.venues.sort((a, b) => a.id.localeCompare(b.id))
 
 export function listVenues({ page, perPage, prefecture, q }: z.infer<typeof querySchema>) {
   const query = q?.normalize('NFKC').toLocaleLowerCase('ja')

@@ -31,7 +31,7 @@ describe('REST API', () => {
     expect(trimmed.totalCount).toBe(2)
   })
 
-  it.each(['page=0', 'page=1.5', 'page=abc', 'page=Infinity', 'page=100001', 'page=0x10', 'page=1e2', 'page=2.0', 'page=%202', 'page=1&page=2', 'perPage=1&perPage=2', 'q=a&q=b', 'pretty&pretty', 'perPage=101', 'perPage=0', 'perPage=', 'q=' + 'a'.repeat(101), 'prefecture='])('rejects invalid query %s', async (query) => {
+  it.each(['page=0', 'page=1.5', 'page=abc', 'page=Infinity', 'page=100001', 'page=0x10', 'page=1e2', 'page=2.0', 'page=%202', 'page=1&page=2', 'perPage=1&perPage=2', 'q=a&q=b', 'pretty&pretty', 'perPage=101', 'perPage=0', 'perPage=', 'q=' + 'a'.repeat(101), 'prefecture=', 'prefecture=Tokyo'])('rejects invalid query %s', async (query) => {
     const res = await request('/venues?' + query)
     expect(res.status).toBe(400)
     const body = await res.json() as any
@@ -41,7 +41,7 @@ describe('REST API', () => {
   })
 
   it('returns empty lists and JSON 404s', async () => {
-    for (const path of ['/venues?q=unknownxyz', '/venues?page=999']) {
+    for (const path of ['/venues?q=unknownxyz', '/venues?page=999', '/venues?' + new URLSearchParams({ prefecture: '沖縄県' })]) {
       expect((await (await request(path)).json() as any).venues).toEqual([])
     }
     for (const path of ['/venues/unknown', '/authors/unknown', '/venuse']) {

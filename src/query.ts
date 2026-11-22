@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { prefectureSchema } from './prefectures'
 
 const integer = (max: number, fallback: number) => z.string()
   .regex(/^[0-9]+$/, 'Use decimal digits only.')
@@ -9,7 +10,7 @@ const integer = (max: number, fallback: number) => z.string()
 export const querySchema = z.object({
   page: integer(100000, 1),
   perPage: integer(100, 10),
-  prefecture: z.string().trim().min(1).max(20).optional(),
+  prefecture: z.string().trim().pipe(prefectureSchema).optional(),
   q: z.string().trim().max(100).optional(),
 })
 
