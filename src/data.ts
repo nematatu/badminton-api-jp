@@ -6,7 +6,7 @@ import { prefectureSchema } from './prefectures'
 
 const id = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
 const text = z.string().trim().min(1)
-const checkedAt = z.iso.date().refine((date) => date <= new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Tokyo' }).format(new Date()), 'Confirmation date cannot be in the future.')
+const checkedAt = z.iso.date()
 const url = z.url().refine((value) => new URL(value).protocol === 'https:', 'HTTPS required')
 export const venueSchema = z.object({
   id,

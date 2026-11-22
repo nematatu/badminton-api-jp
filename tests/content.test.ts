@@ -11,6 +11,11 @@ function fixture() {
 it('accepts all 47 prefectures and the shipped dataset', () => {
   expect(prefectureSchema.options).toHaveLength(47)
   expect(contentSchema.safeParse({ venues: venueData, authors: authorData }).success).toBe(true)
+  // Workers has no live clock during module initialization; check future dates in CI.
+  const today = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Tokyo' }).format(new Date())
+  for (const venue of venueData) for (const source of venue.sources) {
+    expect(source.checkedAt <= today, `${venue.id}: confirmation date must not be in the future`).toBe(true)
+  }
 })
 
 it.each([
@@ -20,7 +25,7 @@ it.each([
   expect(contentSchema.safeParse({ ...data, venues: [{ ...data.venues[0], [field]: value }] }).success).toBe(false)
 })
 
-it.each(['2026-02-30', '9999-12-31'])('rejects invalid/future confirmation date %s', (date) => {
+it.each(['2026-02-30', 'not-a-date'])('rejects invalid confirmation date %s', (date) => {
   const data = fixture()
   data.venues[0].sources[0].checkedAt = date
   expect(contentSchema.safeParse(data).success).toBe(false)
